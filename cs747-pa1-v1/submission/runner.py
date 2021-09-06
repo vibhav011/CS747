@@ -11,6 +11,7 @@ def callBandit(instances, algorithms, epsilon, scales, thresholds, horizons):
                         for horizon in horizons:
                             REG, HIGHS = main_function(instance, algorithm, seed, epsilon, scale, threshold, horizon)
                             f.write(", ".join([instance, algorithm, str(seed), str(epsilon), str(scale), str(threshold), str(horizon), '%.3f'%REG, str(HIGHS)]) + '\n')
+                            f.flush()
     
     # lines.sort()
     f.close()

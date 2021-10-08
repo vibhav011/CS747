@@ -21,17 +21,10 @@ class MDP:
 
 def constructMDP(path):
     f = open(path, 'r')
-    S = int(f.readline().split()[1])
-    A = int(f.readline().split()[1])
+    S = int(f.readline().split()[1])        # number of states
+    A = int(f.readline().split()[1])        # number of actions
     mdp = MDP(S, A)
-
-    end = f.readline().split()
-    # for i in range(1, len(end)):
-    #     t = int(end[i])
-    #     if t < 0:
-    #         continue
-    #     for a in range(A):
-    #         mdp.STR[t][a].append((t, 1.0, 0.0))
+    f.readline()                            # end
 
     line = f.readline().split()
     while line[0] == 'transition':
@@ -46,7 +39,7 @@ def constructMDP(path):
     
     mdp.computeTerminal()
     
-    mdp.gamma = float(f.readline().split()[1])
+    mdp.gamma = float(f.readline().split()[1])      # value of gamma
 
     f.close()
     return mdp
@@ -164,7 +157,7 @@ def main_function(mdp_path, alg):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--mdp', type=str, required=True)
-    parser.add_argument('--algorithm', type=str, default='hpi')
+    parser.add_argument('--algorithm', type=str, default='lp')
 
     args = parser.parse_args()
     

@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 
-np.random.seed(0)
+# np.random.seed(0)
 
 BLANK = 0
 grid = np.zeros((3,3), dtype=int)
@@ -134,7 +134,8 @@ def cell_value(i):
     else:
         return ' '
 
-def DrawGrid():    
+def DrawGrid():  
+    return  
     global grid
     print()
     print("     |     |     ")  
@@ -162,14 +163,30 @@ if __name__ == '__main__':
     # p2_policy = get_policy('unif_rand_p2_policy')
     # auto_p2=True
     print("Anti-Tic-Tac-Toe Game")    
-    print("Player 1 --- Player 2")    
+    print("Player 1 --- Player 2")
 
-    result = p1()
+    p1_w = 0
+    p2_w = 0
+    num_games = 1000
+    
+    for _ in range(num_games):  
+        # print("\nGame Start")
+        np.random.seed(_)
+        grid = np.zeros((3,3), dtype=int)
+        
+        result = p1()
 
-    DrawGrid()
-    if result == 1:
-        print("Player 1 wins")
-    elif result == 2:
-        print("Player 2 wins")
-    else:
-        print("Draw game")
+        DrawGrid()
+        if result == 1:
+            p1_w += 1
+            # print("Player 1 wins")
+        elif result == 2:
+            # print("Player 2 wins")
+            p2_w += 1
+        else:
+            pass
+            # print("Draw game")
+    
+    print(f"Player 1 wins: {p1_w}")
+    print(f"Player 2 wins: {p2_w}")
+    print(f"Draw games: {num_games-p1_w-p2_w}")

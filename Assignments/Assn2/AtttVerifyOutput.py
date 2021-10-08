@@ -19,6 +19,11 @@ def run(states,policy,player):
     cmd_decoder = "python3","decoder.py","--value-policy","verify_attt_planner","--states",states ,"--player-id",str(player)
     print("\n","Generating the decoded policy file using decoder.py")
     cmd_output = subprocess.check_output(cmd_decoder,universal_newlines=True)
+    fname = f'opt_{player}_{policy[-5]}.txt'
+    print(fname)
+    f = open(fname,'w')
+    f.write(cmd_output)
+    f.close()
 
     os.remove('verify_attt_mdp')
     os.remove('verify_attt_planner')

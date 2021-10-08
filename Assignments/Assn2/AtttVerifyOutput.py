@@ -4,19 +4,19 @@ from numpy import cdouble
 parser = argparse.ArgumentParser()
 
 def run(states,policy,player):
-    cmd_encoder = "python","encoder.py","--policy",policy,"--states",states
+    cmd_encoder = "python3","encoder.py","--policy",policy,"--states",states
     print("\n","Generating the MDP encoding using encoder.py")
     f = open('verify_attt_mdp','w')
     subprocess.call(cmd_encoder,stdout=f)
     f.close()
 
-    cmd_planner = "python","planner.py","--mdp","verify_attt_mdp"
+    cmd_planner = "python3","planner.py","--mdp","verify_attt_mdp"
     print("\n","Generating the value policy file using planner.py using default algorithm")
     f = open('verify_attt_planner','w')
     subprocess.call(cmd_planner,stdout=f)
     f.close()
 
-    cmd_decoder = "python","decoder.py","--value-policy","verify_attt_planner","--states",states ,"--player-id",str(player)
+    cmd_decoder = "python3","decoder.py","--value-policy","verify_attt_planner","--states",states ,"--player-id",str(player)
     print("\n","Generating the decoded policy file using decoder.py")
     cmd_output = subprocess.check_output(cmd_decoder,universal_newlines=True)
 

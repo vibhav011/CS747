@@ -15,8 +15,8 @@ class MDP():
     def generateEpisodicMDP(self,S,A,gamma,mdptype):
         print("numStates",S)
         print("numActions",A)
-        start = random.randint(0, S-1)
-        print("start",start)
+        # start = random.randint(0, S-1)
+        # print("start",start)
         if S>5:
             end_ls = random.sample(range(S), random.randint(0, max(2,S//10)))
         else:
@@ -53,7 +53,7 @@ class MDP():
     def generateContinuingMDP(self,S,A,gamma,mdptype):
         print("numStates",S)
         print("numActions",A)
-        print("start 0")
+        # print("start 0")
         print("end -1")
         #start = random.randint(0, S-1)
         #print("start",start)

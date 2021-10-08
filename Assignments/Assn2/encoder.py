@@ -22,42 +22,44 @@ def readPolicy(policypath):
 
 def gameOver(s):
     if not '0' in s:
-        return True
+        return 1
     
     for p in ['1', '2']:
         for i in range(3):
             if s[3*i] == p and s[3*i+1] == p and s[3*i+2] == p:
-                return True
+                return 2
             if s[i] == p and s[i+3] == p and s[i+6] == p:
-                return True
+                return 2
         if s[0] == p and s[4] == p and s[8] == p:
-            return True
+            return 2
         if s[2] == p and s[4] == p and s[6] == p:
-            return True
+            return 2
     
-    return False
+    return 0
 
 def printTransitions(states, current_player, opponent_policy):
-    lose = len(states)
-    win = lose+1
+    term = len(states)
     for idx, s in enumerate(states):
         for a in range(9):
             if s[a] != '0':
-                print("transition", idx, a, idx, 0.0, 1.0)
+                # print("transition", idx, a, idx, 0.0, 1.0)
                 continue
             _s = s[:a] + str(current_player) + s[a+1:]
 
-            if gameOver(_s):
-                print("transition", idx, a, lose, 0.0, 1.0)
+            if gameOver(_s) > 0:
+                print("transition", idx, a, term, 0.0, 1.0)
                 continue
             
             for a2 in range(9):
                 if opponent_policy[_s][a2] > 0:
                     new_s = _s[:a2] + str(3-current_player) + _s[a2+1:]
-                    next_s = win
+                    next_s = term
                     rew = 1.0
-                    if not gameOver(new_s):
+                    g = gameOver(new_s)
+                    if g == 0:
                         next_s = states.index(new_s)
+                        rew = 0.0
+                    elif g == 1:
                         rew = 0.0
                     print("transition", idx, a, next_s, rew, opponent_policy[_s][a2])
 
@@ -71,10 +73,10 @@ if __name__ == "__main__":
     states = readStates(args.states)
     current_player, opponent_policy = readPolicy(args.policy)
 
-    print("numStates", len(states)+2)
+    print("numStates", len(states)+1)
     print("numActions", 9)
     # len(states) is a loss or draw. len(states)+1 is a win
-    print("end",' '.join(map(str, [len(states), len(states)+1])))
+    print("end",len(states))
     printTransitions(states, current_player, opponent_policy)
     print("mdptype episodic")
     print("discount ", 1)

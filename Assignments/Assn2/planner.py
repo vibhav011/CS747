@@ -1,7 +1,6 @@
 import numpy as np
 import argparse
 import pulp as pl
-import sys
 class MDP:
     def __init__(self, states, actions):
         self.S = states
@@ -15,10 +14,10 @@ class MDP:
         for s in range(self.S):
             for a in range(self.A):
                 if len(self.STR[s][a]) == 0:
-                    return False
+                    self.isNonTerminal[s, a] = False
+                    continue
                 if self.STR[s][a][0][0] == s and self.STR[s][a][0][1] == 1.0 and self.STR[s][a][0][2] == 0.0:
                     self.isNonTerminal[s, a] = False
-        return True
 
 def constructMDP(path):
     f = open(path, 'r')
@@ -27,12 +26,12 @@ def constructMDP(path):
     mdp = MDP(S, A)
 
     end = f.readline().split()
-    for i in range(1, len(end)):
-        t = int(end[i])
-        if t < 0:
-            continue
-        for a in range(A):
-            mdp.STR[t][a].append((t, 1.0, 0.0))
+    # for i in range(1, len(end)):
+    #     t = int(end[i])
+    #     if t < 0:
+    #         continue
+    #     for a in range(A):
+    #         mdp.STR[t][a].append((t, 1.0, 0.0))
 
     line = f.readline().split()
     while line[0] == 'transition':
@@ -45,9 +44,7 @@ def constructMDP(path):
         for a in range(A):
             mdp.STR[s][a].sort()
     
-    if not mdp.computeTerminal():
-        print('ERROR: Some state-action pairs have no trasitions defined.')
-        sys.exit()
+    mdp.computeTerminal()
     
     mdp.gamma = float(f.readline().split()[1])
 
@@ -91,20 +88,30 @@ def calcQ(mdp, s, a, V):
 def optPolicy(mdp, V):
     P = np.zeros(mdp.S, dtype=int)
     for s in range(mdp.S):
-        P[s] = np.argmax([calcQ(mdp, s, a, V) for a in range(mdp.A)])
+        Qs = [calcQ(mdp, s, a, V) if len(mdp.STR[s][a]) > 0 else -np.inf for a in range(mdp.A)]
+        P[s] = np.argmax(Qs)
     return P
 
 def valueIter(mdp):
     V = np.zeros(mdp.S)
+    V_old = np.zeros(mdp.S)
     while True:
-        V_old = V
-        V = value_eval(mdp, optPolicy(mdp, V_old))
-        if np.allclose(V, V_old):
+        for s in range(mdp.S):
+            Qs = [calcQ(mdp, s, a, V_old) for a in range(mdp.A) if len(mdp.STR[s][a]) > 0]
+            V[s] = np.max(Qs) if len(Qs) > 0 else 0.0
+        if np.allclose(V, V_old, rtol=0, atol=1e-9):
             break
+        V_old = V.copy()
     return V, optPolicy(mdp, V)
 
 def HowardPI(mdp):
     P = np.zeros(mdp.S, dtype=int)
+    for s in range(mdp.S):
+        for a in range(mdp.A):
+            if len(mdp.STR[s][a]) == 0:
+                continue
+            P[s] = a
+            break
     V = np.zeros(mdp.S)
     optFound = False
 

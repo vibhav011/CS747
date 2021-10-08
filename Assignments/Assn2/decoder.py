@@ -13,7 +13,7 @@ def readValuePolicy(policypath):
     policy = [int(u.split()[1]) for u in s]
     f.close()
 
-    return policy[:-2]
+    return policy[:-1]
 
 def printOptPolicy(states, policy):
     current = [0.0] * 9

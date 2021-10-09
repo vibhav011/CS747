@@ -4,7 +4,7 @@ import numpy as np
 STATES = ["./data/attt/states/states_file_p1.txt", "./data/attt/states/states_file_p2.txt"]
 
 def convertToPolicy(cmd_output):
-    lines = cmd_output.split('\n')
+    lines = cmd_output.splitlines()
     policy = {}
 
     for line in lines[1:]:
@@ -22,11 +22,11 @@ def findOptimalPolicy(opponent_policypath, current_policypath, current_player):
     f.close()
 
     cmd_planner = "python3","planner.py","--mdp","encoded_mdp.txt"
-    f = open('verify_attt_planner.txt','w')
+    f = open('opt_policy.txt','w')
     subprocess.call(cmd_planner,stdout=f)
     f.close()
 
-    cmd_decoder = "python3","decoder.py","--value-policy","verify_attt_planner.txt","--states",STATES[current_player-1] ,"--player-id",str(current_player)
+    cmd_decoder = "python3","decoder.py","--value-policy","opt_policy.txt","--states",STATES[current_player-1] ,"--player-id",str(current_player)
     cmd_output = subprocess.check_output(cmd_decoder,universal_newlines=True)
     
     f = open(current_policypath,'w')
@@ -34,7 +34,7 @@ def findOptimalPolicy(opponent_policypath, current_policypath, current_player):
     f.close()
 
     os.remove('encoded_mdp.txt')
-    os.remove('verify_attt_planner.txt')
+    os.remove('opt_policy.txt')
 
     return convertToPolicy(cmd_output)
 

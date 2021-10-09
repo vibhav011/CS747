@@ -21,9 +21,6 @@ def readPolicy(policypath):
     return current_player, opponent_policy
 
 def gameOver(s):
-    if not '0' in s:
-        return 1
-    
     for p in ['1', '2']:
         for i in range(3):
             if s[3*i] == p and s[3*i+1] == p and s[3*i+2] == p:
@@ -35,6 +32,9 @@ def gameOver(s):
         if s[2] == p and s[4] == p and s[6] == p:
             return 2
     
+    if not '0' in s:
+        return 1
+
     return 0
 
 def printTransitions(states, current_player, opponent_policy):
@@ -42,7 +42,7 @@ def printTransitions(states, current_player, opponent_policy):
     for idx, s in enumerate(states):
         for a in range(9):
             if s[a] != '0':
-                # print("transition", idx, a, idx, 0.0, 1.0)
+                print("transition", idx, a, idx, -10.0, 1.0)
                 continue
             _s = s[:a] + str(current_player) + s[a+1:]
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     print("numStates", len(states)+1)
     print("numActions", 9)
-    # len(states) is a loss or draw. len(states)+1 is a win
+    # len(states) is a win, loss or draw
     print("end",len(states))
     printTransitions(states, current_player, opponent_policy)
     print("mdptype episodic")

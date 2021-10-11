@@ -75,4 +75,3 @@ if __name__ == '__main__':
 
         policies[0], policies[1] = policies_new[0], policies_new[1]
     
-    # print(f"Final policy files:\nP1: {p1_policy_path}\nP2: {p2_policy_path}")

@@ -135,7 +135,7 @@ def cell_value(i):
         return ' '
 
 def DrawGrid():  
-    return  
+    # return  
     global grid
     print()
     print("     |     |     ")  
@@ -167,7 +167,7 @@ if __name__ == '__main__':
 
     p1_w = 0
     p2_w = 0
-    num_games = 1000
+    num_games = 1
     
     for _ in range(num_games):  
         # print("\nGame Start")

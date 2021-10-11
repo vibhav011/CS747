@@ -1,7 +1,12 @@
 import subprocess,os
 import numpy as np
+from pathlib import Path
+import os
 
 STATES = ["./data/attt/states/states_file_p1.txt", "./data/attt/states/states_file_p2.txt"]
+DIR = "./policies"
+P1_INITIAL_POLICY = "./data/attt/policies/p1_policy2.txt"
+P2_INITIAL_POLICY = None
 
 def convertToPolicy(cmd_output):
     lines = cmd_output.splitlines()
@@ -39,39 +44,35 @@ def findOptimalPolicy(opponent_policypath, current_policypath, current_player):
     return convertToPolicy(cmd_output)
 
 if __name__ == '__main__':
+    Path(DIR).mkdir(exist_ok=True)
 
-    p1_policy_path = "./data/attt/policies/p1_policy1.txt"
-    p2_policy_path = "opt_2_0.txt"
+    policy_paths = [P1_INITIAL_POLICY, P2_INITIAL_POLICY]
+    start = 0 if policy_paths[0] is not None else 1
 
-    print(f"Starting with a policy for P1 present at {p1_policy_path}\n")
+    policy_paths[1-start] = f"{DIR}/opt_{2-start}_0.txt"
 
-    p1_policy = convertToPolicy(open(p1_policy_path).read())
-    p2_policy = findOptimalPolicy(p1_policy_path, p2_policy_path, 2)
+    print(f"Starting with a policy for P{1+start} present at {policy_paths[start]}\n")
 
-    i = 1
-    while True:
-        if p1_policy_path[:3] == "opt":
-            os.remove(p1_policy_path)
-        p1_policy_path = "opt_1_" + str(i) + ".txt"
-        p1_policy_new = findOptimalPolicy(p2_policy_path, p1_policy_path, 1)
+    policies = [None, None]
+    policies_new = [None, None]
+    policies[start] = convertToPolicy(open(policy_paths[start]).read())
+    policies[1-start] = findOptimalPolicy(policy_paths[start], policy_paths[1-start], 2-start)
 
-        if p2_policy_path[:3] == "opt":
-            os.remove(p2_policy_path)
-        p2_policy_path = "opt_2_" + str(i) + ".txt"
-        p2_policy_new = findOptimalPolicy(p1_policy_path, p2_policy_path, 2)
+    for i in range(1, 11):
+        policy_paths[start] = f"{DIR}/opt_{1+start}_{i}.txt"
+        policies_new[start] = findOptimalPolicy(policy_paths[1-start], policy_paths[start], 1+start)
 
-        dif1 = sum([1 if p1_policy[k] != p1_policy_new[k] else 0 for k in p1_policy])
-        dif2 = sum([1 if p2_policy[k] != p2_policy_new[k] else 0 for k in p2_policy])
+        policy_paths[1-start] = f"{DIR}/opt_{2-start}_{i}.txt"
+        policies_new[1-start] = findOptimalPolicy(policy_paths[start], policy_paths[1-start], 2-start)
+
+        dif1 = sum([1 if policies[0][k] != policies_new[0][k] else 0 for k in policies[0]])
+        dif2 = sum([1 if policies[1][k] != policies_new[1][k] else 0 for k in policies[1]])
 
         print("Iteration: ",i)
         print(f"P1 policy differs at {dif1} states")
         print(f"P2 policy differs at {dif2} states")
         print("")
 
-        p1_policy, p2_policy = p1_policy_new, p2_policy_new
-        i = i + 1
-
-        if dif1 == 0 and dif2 == 0:
-            break
+        policies[0], policies[1] = policies_new[0], policies_new[1]
     
-    print(f"Final policy files:\nP1: {p1_policy_path}\nP2: {p2_policy_path}")
+    # print(f"Final policy files:\nP1: {p1_policy_path}\nP2: {p2_policy_path}")
